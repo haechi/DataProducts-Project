@@ -1,2 +1,3 @@
-# DataProducts-Project
-Developing Data Products Course Project: Shiny Application and Reproducible Pitch
+# Project:Developing Data Products Course
+
+Shiny Application and Reproducible Pitch

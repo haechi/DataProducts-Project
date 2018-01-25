@@ -27,7 +27,7 @@ The goal of this project was to develop a dynamic shiny application displaying t
 
 Project links:
 * <a href='https://github.com/haechi/DataProducts-Project'>Github repository</a>
-* <a href='http://haechi.shinyapps.io/air_quality_map'>Shinys Application</a>
+* <a href='http://haechi.shinyapps.io/air_quality_map'>Shiny Application</a>
 
 ---
 ## Functionality

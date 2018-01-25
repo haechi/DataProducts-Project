@@ -1,0 +1,12 @@
+name: air_quality_map
+title: Air Quality Map
+username:
+account: haechi
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 261444
+bundleId: 1192556
+url: https://haechi.shinyapps.io/air_quality_map/
+when: 1516890874.0348
+asMultiple: FALSE
+asStatic: FALSE

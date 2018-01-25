@@ -6,6 +6,7 @@ library(dplyr)
 # Define server logic required to draw a histogram
 shinyServer(function(input, output,session) {
   
+  # Showing or hiding the legend
   observe({
     proxy <- leafletProxy("map")
     
@@ -19,13 +20,17 @@ shinyServer(function(input, output,session) {
     }
   })
    
+  # Map rendering 
   output$map <- renderLeaflet({
     # World Air Quality Index
     # API Homepage: http://aqicn.org/api/
     
+    # API token 
     token <- "3e0dd90175924cf5dd95296e75f93e13f9dc1cb3"
     name.loc <- input$location
     
+    # Convert the selection into measurement station IDs.
+    # The method in the API doc for getting city name based data did not work.
     if ((is.null(name.loc)) || (identical(name.loc,"IP Based"))) id.loc <- "here"
     if (identical(name.loc,"Beijing")) id.loc <- "@3303"
     if (identical(name.loc,"Shanghai")) id.loc <- "@487"
@@ -33,9 +38,11 @@ shinyServer(function(input, output,session) {
     if (identical(name.loc,"Seoul")) id.loc <- "@5508"
     if (identical(name.loc,"Tokyo")) id.loc <- "@2290"
     
+    # Getting the location based json object
     url.loc <- paste("http://api.waqi.info/feed/",id.loc,"/?token=",token,sep="")
     json.loc <- as.data.frame(fromJSON(url.loc))
     
+    # Reverting to default location if something went wrong
     if (json.loc$status[1] != "ok") {
       # Switch to Beijing as default
       loc <- "@885"
@@ -43,6 +50,7 @@ shinyServer(function(input, output,session) {
       json.loc <- as.data.frame(fromJSON(url.loc))
     }
     
+    # Deltas for setting up the map area
     delta.lat <- 0.15
     delta.long <- 0.3
     
@@ -53,6 +61,7 @@ shinyServer(function(input, output,session) {
                  as.numeric(json.loc$data.city.geo[2])+delta.long/2,"&",
                  "token=",token,sep="")
     
+    # Another bug in the API which sometimes switched latitude and longitude
     if (length(fromJSON(url.map)$data) == 0) {
       
       # Hack that switches the latitude and longitude respose
@@ -63,10 +72,10 @@ shinyServer(function(input, output,session) {
                    as.numeric(json.loc$data.city.geo[1])+delta.long/2,"&",
                    "token=",token,sep="")
     }
-    
-    
+
     json.map <- as.data.frame(fromJSON(url.map))
 
+    # Constructing a data frame for leaflet
     aqi.map <- data.frame(idx = as.numeric(json.map$data.aqi),
                           lat = as.numeric(json.map$data.lat),
                           lng = as.numeric(json.map$data.lon),
@@ -88,9 +97,11 @@ shinyServer(function(input, output,session) {
                               }
                             }))
 
+    # Colors for the air pollution level
     pal <- colorFactor(c("darkgreen", "gold","darkorange","red","purple","saddlebrown"), 
                        domain = c("L1", "L2","L3","L4","L5","L6"))
     
+    # leaflet map rendering
     aqi.map %>% leaflet() %>% 
       addProviderTiles(providers$Stamen.TonerLite, 
                        options = providerTileOptions(noWrap = TRUE)) %>%

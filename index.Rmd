@@ -1,4 +1,20 @@
-# Project: Developing Data Products Course
+---
+title       : Air Quality Map
+subtitle    : Developing Data Products - Course Project
+author      : Alexander Zhou
+framework   : io2012        
+highlighter : highlight.js  
+hitheme     : solarized_dark      
+widgets     : []           
+mode        : selfcontained 
+knit        : slidify::knit2slides
+--- 
+
+<style> 
+  .title-slide { background-color: #FFFFFF; }
+</style>
+
+## Background
 
 The goal of this project was to develop a dynamic shiny application displaying the current Air Quality Index (AQI) for the current location. The index scale is not linear. Instruction of how to calculate the index can be found <a href='https://en.wikipedia.org/wiki/Air_quality_index#Computing_the_AQI'>here</a>. The AQI divides the air pollution into six levels
 
@@ -10,9 +26,10 @@ The goal of this project was to develop a dynamic shiny application displaying t
 6. Hazardous
 
 Project links:
-* <a href='https://haechi.github.io/DataProducts-Project'>Github Page</a>
-* <a href='http://haechi.shinyapps.io/air_quality_map'>Shiny Application</a>
+* <a href='https://github.com/haechi/DataProducts-Project'>Github repository</a>
+* <a href='http://haechi.shinyapps.io/air_quality_map'>Shinys Application</a>
 
+---
 ## Functionality
 
 The Application will determine the visitor's current IP location and set a rectangle boundary around the approximate location. The sensor station data for station within the boundary is then pull as <a href='https://json.org'>JSON</a> object from the <a href='http://aqicn.org/'>World Air Quality Index</a> API. 
@@ -24,6 +41,7 @@ Additionally, the user has the following menu options
 * Displaying a short help text
 * Hiding the legend
 
+---
 ## User Interface
 
 The shiny application on displays the map with the overlay data. This can be done by using a `bootstrapPage` layout and rendering the leaflet map with the following options
@@ -40,6 +58,7 @@ checkboxInput("legend", "Show legend", TRUE),
 checkboxInput("help", "Show help", FALSE),
 ```
 
+---
 ## Server 
 
 For the data processing function the server will first assemble a formatted URL directed to the World Air Quality Index <a href='http://aqicn.org/api/'>API</a>. The API token was generated before on the API homepage. 
@@ -55,3 +74,5 @@ aqi.map %>% leaflet() %>%
   addProviderTiles(providers$Stamen.TonerLite, 
                    options = providerTileOptions(noWrap = TRUE)) %>% ...
 ```
+
+

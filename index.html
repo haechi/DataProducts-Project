@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Air Quality Map</title>
+  <meta charset="utf-8">
+  <meta name="description" content="Air Quality Map">
+  <meta name="author" content="Alexander Zhou">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/solarized_dark.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  
+  
+  <!-- Grab CDN jQuery, fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery.js"><\/script>')</script> 
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+  
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+        <slide class="title-slide segue nobackground">
+  <hgroup class="auto-fadein">
+    <h1>Air Quality Map</h1>
+    <h2>Developing Data Products - Course Project</h2>
+    <p>Alexander Zhou<br/></p>
+  </hgroup>
+  <article></article>  
+</slide>
+    
+
+    <!-- SLIDES -->
+    <slide class="" id="slide-1" style="background:;">
+  <article data-timings="">
+    <style> 
+  .title-slide { background-color: #FFFFFF; }
+</style>
+
+<h2>Background</h2>
+
+<p>The goal of this project was to develop a dynamic shiny application displaying the current Air Quality Index (AQI) for the current location. The index scale is not linear. Instruction of how to calculate the index can be found <a href='https://en.wikipedia.org/wiki/Air_quality_index#Computing_the_AQI'>here</a>. The AQI divides the air pollution into six levels</p>
+
+<ol>
+<li>Good </li>
+<li>Moderate</li>
+<li>Unhealthy for Sensitive Groups</li>
+<li>Unhealthy</li>
+<li>Very Unhealthy</li>
+<li>Hazardous</li>
+</ol>
+
+<p>Project links:</p>
+
+<ul>
+<li><a href='https://github.com/haechi/DataProducts-Project'>Github repository</a></li>
+<li><a href='haechi.shinyapps.io'>Shinys Application</a></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-2" style="background:;">
+  <hgroup>
+    <h2>Functionality</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>The Application will determine the visitor&#39;s current IP location and set a rectangle boundary around the approximate location. The sensor station data for station within the boundary is then pull as <a href='https://json.org'>JSON</a> object from the <a href='http://aqicn.org/'>World Air Quality Index</a> API. </p>
+
+<p>The sensor station data is then overlaid on the map. The marker color is changed accordingly  to the AQI level.</p>
+
+<p>Additionally, the user has the following menu options</p>
+
+<ul>
+<li>Change the location by selecting a city from the drop-down list</li>
+<li>Displaying a short help text</li>
+<li>Hiding the legend</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-3" style="background:;">
+  <hgroup>
+    <h2>User Interface</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>The shiny application on displays the map with the overlay data. This can be done by using a <code>bootstrapPage</code> layout and rendering the leaflet map with the following options</p>
+
+<pre><code>tags$style(type = &quot;text/css&quot;, &quot;html, body {width:100%;height:100%}&quot;),
+leafletOutput(&quot;map&quot;, width = &quot;100%&quot;, height = &quot;100%&quot;),
+</code></pre>
+
+<p>The controls were implemented inside an <code>absolutePanel</code> using the following controls</p>
+
+<pre><code>selectInput(&quot;location&quot;, &quot;Location Selection&quot;,
+  c(&quot;IP Based&quot;,&quot;Beijing&quot;,&quot;Shanghai&quot;,&quot;Hong Kong&quot;,&quot;Seoul&quot;,&quot;Tokyo&quot;)),
+checkboxInput(&quot;legend&quot;, &quot;Show legend&quot;, TRUE),
+checkboxInput(&quot;help&quot;, &quot;Show help&quot;, FALSE),
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-4" style="background:;">
+  <hgroup>
+    <h2>Server</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>For the data processing function the server will first assemble a formatted URL directed to the World Air Quality Index <a href='http://aqicn.org/api/'>API</a>. The API token was generated before on the API homepage. </p>
+
+<pre><code>token &lt;- &quot;3e0dd90175924cf5dd95296e75f93e13f9dc1cb3&quot;
+id.loc &lt;- &quot;here&quot;
+url.loc &lt;- paste(&quot;http://api.waqi.info/feed/&quot;,id.loc,&quot;/?token=&quot;,token,sep=&quot;&quot;)
+json.loc &lt;- as.data.frame(fromJSON(url.loc))
+</code></pre>
+
+<p>The geo location obtained from this query is then used to again to obtain measurement stations in close proximity. The stations AQI level is determined and the resulting <code>dataframe</code> is passed to <code>leavelet</code> for rendering.</p>
+
+<pre><code>aqi.map %&gt;% leaflet() %&gt;% 
+  addProviderTiles(providers$Stamen.TonerLite, 
+                   options = providerTileOptions(noWrap = TRUE)) %&gt;% ...
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+  <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
+    <ul>
+      <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=1 title='NA'>
+         1
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=2 title='Functionality'>
+         2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='User Interface'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='Server'>
+         4
+      </a>
+    </li>
+  </ul>
+  </div>  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+  <!-- Load Javascripts for Widgets -->
+  
+  <!-- LOAD HIGHLIGHTER JS FILES -->
+  <script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <!-- DONE LOADING HIGHLIGHTER JS FILES -->
+   
+  </html>

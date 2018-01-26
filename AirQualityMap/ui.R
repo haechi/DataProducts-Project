@@ -11,7 +11,7 @@ bootstrapPage(
   absolutePanel(top=10, right=10,
     h2("Air Quality Map"),
     selectInput("location", "Location Selection",
-                c("IP Based","Beijing","Shanghai","Hong Kong","Seoul","Tokyo")),
+                c("Beijing","Shanghai","Hong Kong","Seoul","Tokyo","This App")),
     checkboxInput("legend", "Show legend", TRUE),
     checkboxInput("help", "Show help", FALSE),
     

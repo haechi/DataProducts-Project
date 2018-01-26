@@ -2,6 +2,7 @@ library(shiny)
 library(jsonlite)
 library(leaflet)
 library(dplyr)
+library(curl)
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output,session) {
@@ -31,7 +32,7 @@ shinyServer(function(input, output,session) {
     
     # Convert the selection into measurement station IDs.
     # The method in the API doc for getting city name based data did not work.
-    if ((is.null(name.loc)) || (identical(name.loc,"IP Based"))) id.loc <- "here"
+    if ((is.null(name.loc)) || (identical(name.loc,"This App"))) id.loc <- "here"
     if (identical(name.loc,"Beijing")) id.loc <- "@3303"
     if (identical(name.loc,"Shanghai")) id.loc <- "@487"
     if (identical(name.loc,"Hong Kong")) id.loc <- "@3308"

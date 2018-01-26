@@ -63,7 +63,7 @@
 
 <ul>
 <li><a href='https://github.com/haechi/DataProducts-Project'>Github repository</a></li>
-<li><a href='haechi.shinyapps.io'>Shinys Application</a></li>
+<li><a href='http://haechi.shinyapps.io/air_quality_map'>Shiny Application</a></li>
 </ul>
 
   </article>
@@ -75,7 +75,7 @@
     <h2>Functionality</h2>
   </hgroup>
   <article data-timings="">
-    <p>The Application will determine the visitor&#39;s current IP location and set a rectangle boundary around the approximate location. The sensor station data for station within the boundary is then pull as <a href='https://json.org'>JSON</a> object from the <a href='http://aqicn.org/'>World Air Quality Index</a> API. </p>
+    <p>The application will determine the selected location and set a rectangle boundary around the approximate location. The sensor station data for station within the boundary is then pull as <a href='https://json.org'>JSON</a> object from the <a href='http://aqicn.org/'>World Air Quality Index</a> API. </p>
 
 <p>The sensor station data is then overlaid on the map. The marker color is changed accordingly  to the AQI level.</p>
 
@@ -93,22 +93,22 @@
 
 <slide class="" id="slide-3" style="background:;">
   <hgroup>
-    <h2>User Interface</h2>
+    <h2>JSON Querry</h2>
   </hgroup>
   <article data-timings="">
-    <p>The shiny application on displays the map with the overlay data. This can be done by using a <code>bootstrapPage</code> layout and rendering the leaflet map with the following options</p>
+    <p>For the data processing function the server will first assemble a formatted URL directed to the World Air Quality Index <a href='http://aqicn.org/api/'>API</a>. The API token was generated before on the API homepage. </p>
 
-<pre><code>tags$style(type = &quot;text/css&quot;, &quot;html, body {width:100%;height:100%}&quot;),
-leafletOutput(&quot;map&quot;, width = &quot;100%&quot;, height = &quot;100%&quot;),
+<pre><code class="r">token &lt;- &quot;3e0dd90175924cf5dd95296e75f93e13f9dc1cb3&quot;
+id.loc &lt;- &quot;here&quot;
+url.loc &lt;- paste(&quot;http://api.waqi.info/feed/&quot;,id.loc,&quot;/?token=&quot;,token,sep=&quot;&quot;)
+json.loc &lt;- as.data.frame(fromJSON(url.loc))
+json.loc$data.city.geo[]
 </code></pre>
 
-<p>The controls were implemented inside an <code>absolutePanel</code> using the following controls</p>
-
-<pre><code>selectInput(&quot;location&quot;, &quot;Location Selection&quot;,
-  c(&quot;IP Based&quot;,&quot;Beijing&quot;,&quot;Shanghai&quot;,&quot;Hong Kong&quot;,&quot;Seoul&quot;,&quot;Tokyo&quot;)),
-checkboxInput(&quot;legend&quot;, &quot;Show legend&quot;, TRUE),
-checkboxInput(&quot;help&quot;, &quot;Show help&quot;, FALSE),
+<pre><code>## [1]  37.57 126.98
 </code></pre>
+
+<p>The geo location obtained from this query is then used to again to obtain measurement stations in close proximity. The stations AQI level is determined and the resulting <code>dataframe</code> is passed to <code>leavelet</code> for rendering.</p>
 
   </article>
   <!-- Presenter Notes -->
@@ -116,22 +116,24 @@ checkboxInput(&quot;help&quot;, &quot;Show help&quot;, FALSE),
 
 <slide class="" id="slide-4" style="background:;">
   <hgroup>
-    <h2>Server</h2>
+    <h2>Example Data Obtained from the API</h2>
   </hgroup>
   <article data-timings="">
-    <p>For the data processing function the server will first assemble a formatted URL directed to the World Air Quality Index <a href='http://aqicn.org/api/'>API</a>. The API token was generated before on the API homepage. </p>
+    <p>The actual api data can be obtained by</p>
 
-<pre><code>token &lt;- &quot;3e0dd90175924cf5dd95296e75f93e13f9dc1cb3&quot;
-id.loc &lt;- &quot;here&quot;
-url.loc &lt;- paste(&quot;http://api.waqi.info/feed/&quot;,id.loc,&quot;/?token=&quot;,token,sep=&quot;&quot;)
-json.loc &lt;- as.data.frame(fromJSON(url.loc))
+<pre><code class="r">json.loc$data.aqi[1]
 </code></pre>
 
-<p>The geo location obtained from this query is then used to again to obtain measurement stations in close proximity. The stations AQI level is determined and the resulting <code>dataframe</code> is passed to <code>leavelet</code> for rendering.</p>
+<pre><code>## [1] 80
+</code></pre>
 
-<pre><code>aqi.map %&gt;% leaflet() %&gt;% 
-  addProviderTiles(providers$Stamen.TonerLite, 
-                   options = providerTileOptions(noWrap = TRUE)) %&gt;% ...
+<p>The name of the name of the city from the approximated location </p>
+
+<pre><code class="r">json.loc$data.city.name[1]
+</code></pre>
+
+<pre><code>## [1] Seoul
+## Levels: Seoul
 </code></pre>
 
   </article>
@@ -156,13 +158,13 @@ json.loc &lt;- as.data.frame(fromJSON(url.loc))
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=3 title='User Interface'>
+        data-slide=3 title='JSON Querry'>
          3
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=4 title='Server'>
+        data-slide=4 title='Example Data Obtained from the API'>
          4
       </a>
     </li>

@@ -10,6 +10,8 @@ mode        : selfcontained
 knit        : slidify::knit2slides
 --- 
 
+
+
 <style> 
   .title-slide { background-color: #FFFFFF; }
 </style>
@@ -27,12 +29,12 @@ The goal of this project was to develop a dynamic shiny application displaying t
 
 Project links:
 * <a href='https://github.com/haechi/DataProducts-Project'>Github repository</a>
-* <a href='haechi.shinyapps.io'>Shinys Application</a>
+* <a href='http://haechi.shinyapps.io/air_quality_map'>Shiny Application</a>
 
 ---
 ## Functionality
 
-The Application will determine the visitor's current IP location and set a rectangle boundary around the approximate location. The sensor station data for station within the boundary is then pull as <a href='https://json.org'>JSON</a> object from the <a href='http://aqicn.org/'>World Air Quality Index</a> API. 
+The application will determine the selected location and set a rectangle boundary around the approximate location. The sensor station data for station within the boundary is then pull as <a href='https://json.org'>JSON</a> object from the <a href='http://aqicn.org/'>World Air Quality Index</a> API. 
 
 The sensor station data is then overlaid on the map. The marker color is changed accordingly  to the AQI level.
 
@@ -42,37 +44,42 @@ Additionally, the user has the following menu options
 * Hiding the legend
 
 ---
-## User Interface
-
-The shiny application on displays the map with the overlay data. This can be done by using a `bootstrapPage` layout and rendering the leaflet map with the following options
-
-```
-tags$style(type = "text/css", "html, body {width:100%;height:100%}"),
-leafletOutput("map", width = "100%", height = "100%"),
-```
-The controls were implemented inside an `absolutePanel` using the following controls
-```
-selectInput("location", "Location Selection",
-  c("IP Based","Beijing","Shanghai","Hong Kong","Seoul","Tokyo")),
-checkboxInput("legend", "Show legend", TRUE),
-checkboxInput("help", "Show help", FALSE),
-```
-
----
-## Server 
+## JSON Querry 
 
 For the data processing function the server will first assemble a formatted URL directed to the World Air Quality Index <a href='http://aqicn.org/api/'>API</a>. The API token was generated before on the API homepage. 
-```
+
+```r
 token <- "3e0dd90175924cf5dd95296e75f93e13f9dc1cb3"
 id.loc <- "here"
 url.loc <- paste("http://api.waqi.info/feed/",id.loc,"/?token=",token,sep="")
 json.loc <- as.data.frame(fromJSON(url.loc))
+json.loc$data.city.geo[]
+```
+
+```
+## [1]  37.57 126.98
 ```
 The geo location obtained from this query is then used to again to obtain measurement stations in close proximity. The stations AQI level is determined and the resulting `dataframe` is passed to `leavelet` for rendering.
-```
-aqi.map %>% leaflet() %>% 
-  addProviderTiles(providers$Stamen.TonerLite, 
-                   options = providerTileOptions(noWrap = TRUE)) %>% ...
+
+---
+## Example Data Obtained from the API
+
+The actual api data can be obtained by
+
+```r
+json.loc$data.aqi[1]
 ```
 
+```
+## [1] 80
+```
+The name of the name of the city from the approximated location 
 
+```r
+json.loc$data.city.name[1]
+```
+
+```
+## [1] Seoul
+## Levels: Seoul
+```
